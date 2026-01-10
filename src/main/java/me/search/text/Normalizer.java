@@ -14,6 +14,8 @@ public class Normalizer {
                             java.text.Normalizer.Form.NFD)
                     .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 
+            normalized = normalized.replaceAll("[^a-z0-9]", "");
+
             normalizedWords.add(normalized);
         }
         return normalizedWords;
