@@ -3,13 +3,11 @@ package me.search.utils;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.CodingErrorAction;
+import java.util.zip.ZipFile;
 
 public final class FileUtils {
 
@@ -102,13 +100,33 @@ public final class FileUtils {
         try (JsonParser parser = new JsonFactory().createParser(file)) {
 
             while (parser.nextToken() != null) {
-                // consumo total do stream
+
             }
 
             return true;
 
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    /* ===================== DOCX ===================== */
+
+    public static boolean isDocxFile(File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] signature = new byte[4];
+            if (fis.read(signature) != 4) return false;
+
+            if (signature[0] != 0x50 || signature[1] != 0x4B)
+                return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (ZipFile zip = new ZipFile(file)) {
+
+            return zip.getEntry("[Content_Types].xml") != null &&
+                    zip.getEntry("word/document.xml") != null;
         }
     }
 }

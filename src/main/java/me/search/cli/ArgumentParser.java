@@ -1,18 +1,17 @@
 package me.search.cli;
 
-import me.search.core.FileScanner;
-import me.search.text.Normalizer;
-import me.search.text.StopWords;
+import me.search.indexing.FileScanner;
+import me.search.text.Formatter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ArgumentParser {
 
     public void parse(String[] args) throws IOException {
-        final Normalizer normalizer = new Normalizer();
-        final StopWords stopWords = new StopWords();
+        final Formatter formatter = new Formatter();
         final FileScanner fileScanner = new FileScanner();
 
         if (args.length == 0) {
@@ -20,8 +19,8 @@ public class ArgumentParser {
             return;
         }
 
-        List<String> normalizedArgs = normalizer.normalizeText(args);
-        List<String> deletedStopWordsArgs = stopWords.delStopWords(normalizedArgs);
+        List<String> normalizedArgs = formatter.normalizer(args);
+        List<String> deletedStopWordsArgs = formatter.stopWords(normalizedArgs);
 
         if (deletedStopWordsArgs.isEmpty()) {
             System.out.print("Use: search <args> with valid args");
@@ -37,9 +36,22 @@ public class ArgumentParser {
         String searchTerms = query.toString().trim();
 
         Map<String, String> fileHash = fileScanner.readFilesBase();
+        Map<String, String> textHash = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : fileHash.entrySet()) {
+            List<String> normalizedText = formatter.normalizer(entry.getValue().split("\\s+"));
+            List<String> formattedText = formatter.stopWords(normalizedText);
+
+            textHash.put(entry.getKey(), formattedText.toString());
+        }
 
         System.out.println("You're searching by: " + searchTerms);
-        System.out.println("Isso é o que esta escrito:");
-        System.out.println(fileHash);
+        System.out.println("Isso é o que está escrito:");
+        for (String values : fileHash.values()) {
+            System.out.println(values);
+        }
+        for (String values : textHash.values()) {
+            System.out.println(values);
+        }
     }
 }
