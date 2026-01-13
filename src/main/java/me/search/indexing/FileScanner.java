@@ -3,8 +3,6 @@ package me.search.indexing;
 import java.io.*;
 import java.util.*;
 
-import me.search.utils.FileUtils;
-
 public class FileScanner {
 
     public List<String> listFiles() {
@@ -34,11 +32,11 @@ public class FileScanner {
 
             File file = new File(path);
 
-            if (FileUtils.isPdfFile(file)) {
+            if (FileVerification.isPdfFile(file)) {
                 String text = readers.pdfReader(file);
                 filesHash.put(path, text);
 
-            } else if (FileUtils.isJsonFile(file)) {
+            } else if (FileVerification.isJsonFile(file)) {
                 String text = readers.jsonReader(file);
 
                 String formattedText = text.replace("{", "").replace("}", "")
@@ -46,15 +44,15 @@ public class FileScanner {
 
                 filesHash.put(path, formattedText);
 
-            } else if (FileUtils.isDocxFile(file)) {
+            } else if (FileVerification.isDocxFile(file)) {
                 String text = readers.docxReader(file);
                 filesHash.put(path, text);
 
-            } else if (FileUtils.isHtmlFile(file)) {
+            } else if (FileVerification.isHtmlFile(file)) {
                 String text = readers.htmlReader(file);
                 filesHash.put(path, text);
 
-            } else if (FileUtils.isTextFile(file)){
+            } else if (FileVerification.isTextFile(file)){
                 String text = readers.txtReader(file);
                 filesHash.put(path, text);
 

@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.tartarus.snowball.ext.PortugueseStemmer;
 
-public class Formatter {
+class Formatter {
 
-    public List<String> normalizer(String[] text) {
+    List<String> normalizer(String[] text) {
 
         List<String> normalizedWords = new ArrayList<>();
         for (String word : text) {
@@ -23,7 +24,22 @@ public class Formatter {
         return normalizedWords;
     }
 
-    public List<String> stopWords(List<String> text) {
+    List<String> stem(List<String> text) {
+        PortugueseStemmer stemmer = new PortugueseStemmer();
+        List<String> stemmedWords = new ArrayList<>();
+
+        for (String word : text) {
+
+            stemmer.setCurrent(word);
+            stemmer.stem();
+
+
+            stemmedWords.add(stemmer.getCurrent());
+        }
+        return stemmedWords;
+    }
+
+    List<String> stopWords(List<String> text) {
 
         Set<String> stopWords = new HashSet<>(List.of(
 
@@ -118,7 +134,8 @@ public class Formatter {
                 "sim","nao","talvez","ok","beleza"
         ));
 
-        text.removeIf(w -> stopWords.contains(w.toLowerCase()));
-        return text;
+        return text.stream()
+                .filter(w -> !stopWords.contains(w))
+                .toList();
     }
 }

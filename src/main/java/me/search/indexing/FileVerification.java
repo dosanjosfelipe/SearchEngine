@@ -1,27 +1,21 @@
-package me.search.utils;
+package me.search.indexing;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.CodingErrorAction;
 import java.util.zip.ZipFile;
 
-public final class FileUtils {
-
+class FileVerification {
     private static final int PDF_HEADER_SIZE = 5;
     private static final int TEXT_MAX_BYTES = 8192;
     private static final int HTML_MAX_BYTES = 2048;
 
-    private FileUtils() {
-        throw new AssertionError("Utility class");
-    }
-
     /* ===================== PDF ===================== */
 
-    public static boolean isPdfFile(File file) {
+    static boolean isPdfFile(File file) {
         try (InputStream in = new FileInputStream(file)) {
 
             byte[] header = new byte[PDF_HEADER_SIZE];
@@ -42,7 +36,7 @@ public final class FileUtils {
 
     /* ===================== TEXT ===================== */
 
-    public static boolean isTextFile(File file) {
+    static boolean isTextFile(File file) {
         try (InputStream in = new FileInputStream(file)) {
 
             byte[] buffer = new byte[TEXT_MAX_BYTES];
@@ -73,7 +67,7 @@ public final class FileUtils {
 
     /* ===================== HTML ===================== */
 
-    public static boolean isHtmlFile(File file) {
+    static boolean isHtmlFile(File file) {
         try (InputStream in = new FileInputStream(file)) {
 
             byte[] buffer = new byte[HTML_MAX_BYTES];
@@ -96,7 +90,7 @@ public final class FileUtils {
 
     /* ===================== JSON ===================== */
 
-    public static boolean isJsonFile(File file) {
+    static boolean isJsonFile(File file) {
         try (JsonParser parser = new JsonFactory().createParser(file)) {
 
             while (parser.nextToken() != null) {
@@ -112,7 +106,7 @@ public final class FileUtils {
 
     /* ===================== DOCX ===================== */
 
-    public static boolean isDocxFile(File file) throws IOException {
+    static boolean isDocxFile(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             byte[] signature = new byte[4];
             if (fis.read(signature) != 4) return false;
