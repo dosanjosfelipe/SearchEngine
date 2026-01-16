@@ -1,9 +1,13 @@
 package me.search.indexing;
 
+import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
+import org.slf4j.Logger;
 
 public class FileScanner {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileScanner.class);
 
     public List<String> listFiles() {
         File folder = new File(System.getProperty("user.dir"));
@@ -17,39 +21,41 @@ public class FileScanner {
                 }
             }
         } else {
-            System.out.print("There aren't files in this folder for search");
             return filesPath;
         }
         return filesPath;
     }
 
-    public Map<String, List<String>> readFilesBase() throws IOException {
+    public Map<String, List<String>> readFilesBase() {
         List<String> filesPath = listFiles();
         Map<String, List<String>> filesHash = new HashMap<>();
         Readers readers = new Readers();
 
-        for (String path : filesPath) {
+        try {
+            for (String path : filesPath) {
+                File file = new File(path);
 
-            File file = new File(path);
+                if (FileVerification.isPdfFile(file)) {
+                    filesHash.put(path, readers.pdfReader(file));
 
-            if (FileVerification.isPdfFile(file)) {
-                filesHash.put(path, readers.pdfReader(file));
+                } else if (FileVerification.isJsonFile(file)) {
+                    filesHash.put(path, readers.jsonReader(file));
 
-            } else if (FileVerification.isJsonFile(file)) {
+                } else if (FileVerification.isDocxFile(file)) {
+                    filesHash.put(path, readers.docxReader(file));
 
-                filesHash.put(path, readers.jsonReader(file));
+                } else if (FileVerification.isHtmlFile(file)) {
+                    filesHash.put(path, readers.htmlReader(file));
 
-            } else if (FileVerification.isDocxFile(file)) {
-                filesHash.put(path, readers.docxReader(file));
+                } else if (FileVerification.isTextFile(file)){
+                    filesHash.put(path, readers.txtReader(file));
 
-            } else if (FileVerification.isHtmlFile(file)) {
-                filesHash.put(path, readers.htmlReader(file));
-
-            } else if (FileVerification.isTextFile(file)){
-                filesHash.put(path, readers.txtReader(file));
-
+                }
             }
+        } catch (IOException e) {
+            logger.error("Fail to read the file", e);
         }
+
         return filesHash;
     }
 }

@@ -12,37 +12,27 @@ import java.util.*;
 
 public class ArgumentParser {
     PipelineFormatter pipelineFormatter = new PipelineFormatter();
+    ScoreCalculator scoreCalculator = new ScoreCalculator();
+    FileScanner fileScanner = new FileScanner();
+    Searcher searcher = new Searcher();
     NameFormatter nameFormatter = new NameFormatter();
+
+    static final String ANSI_RESET = "\u001B[0m";
+    static final String ANSI_RED = "\u001B[31m";
+    static final String ANSI_ORANGE = "\u001B[38;5;208m";
+    static final String ANSI_YELLOW = "\u001B[33m";
+    static final String ANSI_GREEN = "\u001B[32m";
+
     public void parse(String[] args) throws IOException {
-        PipelineFormatter formatterApplier = new PipelineFormatter();
-        ScoreCalculator scoreCalculator = new ScoreCalculator();
-        FileScanner fileScanner = new FileScanner();
-        Searcher searcher = new Searcher();
-
-        // -------------------- ARGS ---------------------
-        if (args.length == 0) {
-            System.out.print("Use: search <args>");
-            return;
-        }
-
-        List<String> rootArgs = formatterApplier.apply(List.of(args), true);
-        List<String> perfectArgs = formatterApplier.apply(List.of(args), false);
+        List<String> rootArgs = pipelineFormatter.apply(List.of(args), true);
+        List<String> perfectArgs = pipelineFormatter.apply(List.of(args), false);
 
         if (rootArgs.isEmpty()) {
             System.out.print("Use: search <args> with valid terms");
             return;
         }
 
-        StringBuilder query = new StringBuilder();
-
-        for (String arg : args) {
-            query.append(arg).append(" ");
-        }
-
-        String searchTerms = query.toString().trim();
-
         Map<String, List<String>> fileHash = fileScanner.readFilesBase();
-
         Map<String, List<String>> rootTextHash = new HashMap<>();
         Map<String, List<String>> perfectTextHash = new HashMap<>();
 
@@ -54,14 +44,8 @@ public class ArgumentParser {
             perfectTextHash.put(entry.getKey(), formattedText);
         }
 
-
         Map<String, List<Integer>> rootCounter = searcher.argsCounter(rootArgs, rootTextHash);
         Map<String, List<Integer>> perfectCounter = searcher.argsCounter(perfectArgs, perfectTextHash);
-
-        String ANSI_RESET = "\u001B[0m";
-        String ANSI_RED = "\u001B[31m";
-        String ANSI_YELLOW = "\u001B[33m";
-        String ANSI_GREEN = "\u001B[32m";
 
 // -------------------- TERMINAL ---------------------
         if (!fileHash.isEmpty()) {
@@ -81,13 +65,13 @@ public class ArgumentParser {
                         String name = nameFormatter.formatFileName(fileName, LIMIT_NAME);
 
                         double grade = entry.getValue();
-                        if (grade > 1000) grade = 1000.0;
 
-                        // Lógica de Seleção de Cor
                         String color;
-                        if (grade <= 300) {
+                        if (grade == 0) {
                             color = ANSI_RED;
-                        } else if (grade <= 699) {
+                        } else if (grade <= 299) {
+                            color = ANSI_ORANGE;
+                        } else if (grade <= 599) {
                             color = ANSI_YELLOW;
                         } else {
                             color = ANSI_GREEN;
@@ -103,5 +87,4 @@ public class ArgumentParser {
             System.out.println(" ");
         }
     }
-
 }

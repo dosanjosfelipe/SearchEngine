@@ -15,17 +15,12 @@ public class Searcher {
         for (Map.Entry<String, List<String>> entry : fileHash.entrySet()) {
             List<Integer> countersList = new ArrayList<>();
 
-
-
-
             for (String arg : args) {
                 long count = entry.getValue().stream().filter(token -> token.equals(arg)).count();
                 countersList.add((int) count);
             }
-
             countMap.put(entry.getKey(), countersList);
         }
-
         return countMap;
     }
 
