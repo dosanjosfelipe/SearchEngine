@@ -15,14 +15,16 @@ public class Installer {
         Files.createDirectories(Paths.get(installDir));
         Files.copy(Paths.get(exeName), Paths.get(installDir + "\\" + exeName), StandardCopyOption.REPLACE_EXISTING);
 
-        String cmd =
+        ProcessBuilder pb = new ProcessBuilder(
                 "powershell -Command " +
                         "\"$old=[Environment]::GetEnvironmentVariable('Path','Machine');" +
                         "if($old -notlike '*" + installDir + "*'){" +
-                        "[Environment]::SetEnvironmentVariable('Path', $old + ';"+installDir+"','Machine')}\"";
+                        "[Environment]::SetEnvironmentVariable('Path', $old + ';"+installDir+"','Machine')}\""
+        );
 
-        Process process = Runtime.getRuntime().exec(cmd);
-        process.waitFor();
+        pb.inheritIO();
+        Process p = pb.start();
+        p.waitFor();
 
         System.out.println("Successful installation.");
     }
