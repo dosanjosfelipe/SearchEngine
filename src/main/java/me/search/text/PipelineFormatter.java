@@ -1,6 +1,5 @@
 package me.search.text;
 
-
 import java.util.List;
 
 public class PipelineFormatter {

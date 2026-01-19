@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 import org.tartarus.snowball.ext.PortugueseStemmer;
 
-class Formatter {
+public class Formatter {
 
-    List<String> normalizer(List<String> text) {
+    public List<String> normalizer(List<String> text) {
 
         List<String> normalizedWords = new ArrayList<>();
         for (String word : text) {
@@ -24,7 +24,7 @@ class Formatter {
         return normalizedWords;
     }
 
-    List<String> stem(List<String> text) {
+    public List<String> stem(List<String> text) {
         PortugueseStemmer stemmer = new PortugueseStemmer();
         List<String> stemmedWords = new ArrayList<>();
 
@@ -39,7 +39,7 @@ class Formatter {
         return stemmedWords;
     }
 
-    List<String> stopWords(List<String> text) {
+    public List<String> stopWords(List<String> text) {
 
         Set<String> stopWords = new HashSet<>(List.of(
 
